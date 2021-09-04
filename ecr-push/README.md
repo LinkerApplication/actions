@@ -13,7 +13,7 @@ on:
 
 - No need to to explicitly use `actions/checkout@v2`, since it is baked into the action.
 
-- A repository name and region should be provided as an input in the following format
+- A repository name, region and AWS credentials should be provided as an input in the following format
 
 ```yaml
 ...
@@ -23,6 +23,8 @@ steps:
     with:
         repo-name: 'your-repo-name'
         repo-region: 'xx-xx-x'
+        aws-access-key-id: 'xxxxxxxxxxxxxxxxxx'
+        aws-secret-access-key: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
         # Optionally a dynamic tag name which will also be pushed to the repository
         # can be specified. Default is `current-dev`
         dynamic-tag-name: 'dynamic-tag-name'
