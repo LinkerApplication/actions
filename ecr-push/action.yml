@@ -7,6 +7,10 @@ inputs:
   repo-region:
     description: 'Region in which an image is stored'
     required: true
+  dynamic-tag-name:
+    description: 'Tag name which will be overwritten each time an image is pushed'
+    required: false
+    default: 'current-dev'
 runs:
   using: 'composite'
   steps:
@@ -32,8 +36,9 @@ runs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ inputs.repo-name }}
         IMAGE_TAG: ${{ env.RELEASE_VERSION }}
+        DYNAMIC_TAG_NAME: ${{ inputs.dynamic-tag-name }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:current-dev .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY: .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:current-dev
       shell: 'bash'
