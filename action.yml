@@ -1,0 +1,36 @@
+name: 'ECR push'
+description: 'Pushes an image tagged with provided tag to a specified repository'
+inputs:
+  repo-name:
+    description: 'Name of a repository to which an images should be pushed'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+
+    - name: Set env
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      shell: 'bash'
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image with provided tag and current-dev to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ inputs.repo-name }}
+        IMAGE_TAG: ${{ env.RELEASE_VERSION }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:current-dev .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:current-dev
+      shell: 'bash'
