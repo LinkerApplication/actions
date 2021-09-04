@@ -1,26 +1,10 @@
-# An action to push an image to ECR
+# Actions for LinkerApplication
 
-## How to use
+> ⚠️ This repository is publicly available, since it does not contain any sensitive information about the project.
+> Anyone can copy it, so do not put any actions, which may be harmful in case of use by any unauthorized users.
 
-- Workflow will work only if this action is called in a workflow with following setup:
+## Available actions
 
-```yaml
-on:
-  push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+
-```
+> Look for detailed documantation is individual action folders.
 
-- No need to to explicitly use `actions/checkout@v2`, since it is baked into the action.
-
-- A repository name should be provided as an input in the following format
-
-```yaml
-...
-steps:
-    ...
-    - uses: LinkerApplication/ecr-push@v1
-    with:
-        repo-name: 'your-repo-name'
-    ...
-```
+- `ecr-push` - Push an image to ECR
