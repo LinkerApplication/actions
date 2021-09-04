@@ -23,5 +23,8 @@ steps:
     with:
         repo-name: 'your-repo-name'
         repo-region: 'xx-xx-x'
+        # Optionally a dynamic tag name which will also be pushed to the repository
+        # can be specified. Default is `current-dev`
+        dynamic-tag-name: 'dynamic-tag-name'
     ...
 ```

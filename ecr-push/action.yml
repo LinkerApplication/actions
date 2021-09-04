@@ -38,7 +38,7 @@ runs:
         IMAGE_TAG: ${{ env.RELEASE_VERSION }}
         DYNAMIC_TAG_NAME: ${{ inputs.dynamic-tag-name }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY: .
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$DYNAMIC_TAG_NAME .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:current-dev
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$DYNAMIC_TAG_NAME
       shell: 'bash'
