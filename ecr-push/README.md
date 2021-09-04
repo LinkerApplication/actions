@@ -13,7 +13,7 @@ on:
 
 - No need to to explicitly use `actions/checkout@v2`, since it is baked into the action.
 
-- A repository name should be provided as an input in the following format
+- A repository name and region should be provided as an input in the following format
 
 ```yaml
 ...
@@ -22,5 +22,6 @@ steps:
     - uses: LinkerApplication/ecr-push@v1
     with:
         repo-name: 'your-repo-name'
+        repo-region: 'xx-xx-x'
     ...
 ```

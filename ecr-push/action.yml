@@ -4,6 +4,9 @@ inputs:
   repo-name:
     description: 'Name of a repository to which an images should be pushed'
     required: true
+  repo-region:
+    description: 'Region in which an image is stored'
+    required: true
 runs:
   using: 'composite'
   steps:
@@ -18,7 +21,7 @@ runs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-central-1
+        aws-region: ${{ inputs.repo-region }}
 
     - name: Login to Amazon ECR
       id: login-ecr
