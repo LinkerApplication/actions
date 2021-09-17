@@ -22,5 +22,10 @@ runs:
     - uses: actions/checkout@v2
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
+      env:
+        IMAGE_NAME: ${{ inputs.image-name }}
+        IMAGE_TAG: ${{ inputs.image-tag }}
+        CONTEXT: ${{ inputs.context }}
+        DOCKERFILE: ${{ inputs.dockerfile-name }}
+      run: docker build $CONTEXT --file $DOCKERFILE --tag $IMAGE_NAME:$IMAGE_TAG
       shell: 'bash' 
