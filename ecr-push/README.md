@@ -19,14 +19,14 @@ on:
 ...
 steps:
     ...
-    - uses: LinkerApplication/ecr-push@v1
-    with:
+    - uses: LinkerApplication/actions/ecr-push@v1
+      with:
         repo-name: 'your-repo-name'
         repo-region: 'xx-xx-x'
         aws-access-key-id: 'xxxxxxxxxxxxxxxxxx'
         aws-secret-access-key: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
         # Optionally a dynamic tag name which will also be pushed to the repository
         # can be specified. Default is `current-dev`
-        dynamic-tag-name: 'dynamic-tag-name'
+        dynamic-tag-name: 'current-dev'
     ...
 ```

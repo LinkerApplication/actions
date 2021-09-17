@@ -1,0 +1,26 @@
+name: Test building prod image
+description: 'Builds an image from provided source with provided parameters'
+inputs:
+  image-name:
+    description: 'Name of an image to be built'
+    required: true
+  image-tag:
+    description: 'Name of a tag'
+    required: false
+    default: 'testing'
+  context:
+    description: 'Path where required dockerfile lives'
+    required: false
+    default: '.'
+  dockerfile-name:
+    description: 'Name of a dockerfile to build from'
+    required: false
+    default: 'Dockerfile'
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag $IMAGE_NAME:$IMAGE_TAG
+      shell: 'bash' 
