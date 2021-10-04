@@ -1,0 +1,108 @@
+name: 'ECS deployment'
+description: 'Deploys an application to the specified ECS cluster'
+inputs:
+  # Deployment configuration
+  cluster-region:
+    description: 'Region of the cluster'
+    required: true
+  cluster-name:
+    description: 'Name of the ECS cluster, which should be updated'
+    required: true
+  service-name:
+    description: 'Name of the ECS service, which sould be updated'
+    required: true
+  task-definition-family-name:
+    description: 'Name of the ECS task definition, which should be updated'
+    required: true
+  task-definition-file-name:
+    description: 'Filename, in which process of deploymant is described'
+    required: true
+  repo-name:
+    description: 'Name of a repository, where required image lives'
+    required: true
+  image-name:
+    description: 'Name of the image to be deployed'
+    required: true
+  image-version:
+    description: 'Specifying the version of an image, which should be deployed'
+    required: false
+
+  # Credentials
+  aws-access-key-id:
+    description: 'AWS access key id'
+    required: true
+  aws-secret-access-key:
+    description: 'AWS secret access key'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    # If image version is not specified, get the most recent tag
+    - name: Get most recent tag
+      id: most_recent_tag
+      uses: "WyriHaximus/github-action-get-previous-tag@v1"
+      if: ${{ !inputs.image-version }}
+
+    - name: Write latest tag to env
+      run: |
+        echo "TAG_TO_DEPLOY=${{ steps.most_recent_tag.outputs.tag }}" >> $GITHUB_ENV
+      if: ${{ !inputs.image-version }}
+      shell: 'bash'
+
+    # Otherwise use the specified tag
+    - name: Write specified tag to env
+      run: |
+        echo "TAG_TO_DEPLOY=${{ inputs.image-version }}" >> $GITHUB_ENV
+      if: ${{ inputs.image-version }}
+      shell: 'bash'
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ inputs.cluster-region }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Download task definition
+      id: download-task
+      run: |
+        aws ecs describe-task-definition \
+          --task-definition ${{ inputs.task-definition-family-name }} \
+          --query taskDefinition > ${{ inputs.task-definition-file-name }}
+        echo "::set-output name=revision::$(cat ${{ inputs.task-definition-file-name }} | jq .revision)"
+      shell: 'bash'
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ inputs.task-definition-file-name }}
+        container-name: ${{ inputs.image-name }}
+        image: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repo-name }}:${{ env.TAG_TO_DEPLOY }}
+
+    - name: Show filled task-definition
+      run: cat ${{ steps.task-def.outputs.task-definition }}
+      shell: 'bash'
+
+    - name: De-register previous revision
+      run: |
+        aws ecs deregister-task-definition \
+          --task-definition ${{ inputs.task-definition-family-name }}:${{ steps.download-task.outputs.revision }}
+      shell: 'bash'
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ inputs.service-name }}
+        cluster: ${{ inputs.cluster-name }}
+        wait-for-service-stability: true
+    

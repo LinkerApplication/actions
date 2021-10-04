@@ -1,5 +1,6 @@
 name: Test building prod image
 description: 'Builds an image from provided source with provided parameters'
+
 inputs:
   image-name:
     description: 'Name of an image to be built'
@@ -16,6 +17,7 @@ inputs:
     description: 'Name of a dockerfile to build from'
     required: false
     default: 'Dockerfile'
+
 runs:
   using: 'composite'
   steps:

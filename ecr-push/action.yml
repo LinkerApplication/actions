@@ -1,5 +1,6 @@
 name: 'ECR push'
 description: 'Pushes an image tagged with provided tag to a specified repository'
+
 inputs:
   repo-name:
     description: 'Name of a repository to which an images should be pushed'
@@ -17,6 +18,7 @@ inputs:
     description: 'Tag name which will be overwritten each time an image is pushed'
     required: false
     default: 'current-dev'
+
 runs:
   using: 'composite'
   steps:
