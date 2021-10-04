@@ -40,27 +40,6 @@ runs:
   steps:
     - name: Checkout
       uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-
-    # If image version is not specified, get the most recent tag
-    - name: Get most recent tag
-      id: most_recent_tag
-      uses: "WyriHaximus/github-action-get-previous-tag@v1"
-      if: ${{ !inputs.image-version }}
-
-    - name: Write latest tag to env
-      run: |
-        echo "TAG_TO_DEPLOY=${{ steps.most_recent_tag.outputs.tag }}" >> $GITHUB_ENV
-      if: ${{ !inputs.image-version }}
-      shell: 'bash'
-
-    # Otherwise use the specified tag
-    - name: Write specified tag to env
-      run: |
-        echo "TAG_TO_DEPLOY=${{ inputs.image-version }}" >> $GITHUB_ENV
-      if: ${{ inputs.image-version }}
-      shell: 'bash'
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -87,7 +66,7 @@ runs:
       with:
         task-definition: ${{ inputs.task-definition-file-name }}
         container-name: ${{ inputs.image-name }}
-        image: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repo-name }}:${{ env.TAG_TO_DEPLOY }}
+        image: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repo-name }}:${{ inputs.image-version }}
 
     - name: Show filled task-definition
       run: cat ${{ steps.task-def.outputs.task-definition }}
