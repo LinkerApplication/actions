@@ -30,8 +30,9 @@ git push origin vX.X.X
 - Update the major version tag `vX` and push it to the repo as well
 
 ```bash
-git tag vX -m "release info"
-git push
+git tag -fa vX
+git push origin :vX
+git push origin vX
 ```
 
 - Create 2 releases. First with the version of the minor tag, second with the major version tag.
