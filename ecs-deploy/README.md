@@ -20,7 +20,11 @@
 
 - Name of the image to be deployed: `image-name`
 
-- Specifying the version of an image, which should be deployed: `image-version`. Is optional. Default is latest tag.
+- Version of an image, that should be deployed: `image-version`. Is optional. Default is latest tag.
+
+- AWS access key id: `aws-access-key-id`.
+
+- AWS secret access key: `aws-secret-access-key`
 
 ```yaml
 ...
@@ -28,14 +32,16 @@ steps:
     ...
     - uses: LinkerApplication/actions/ecs-deploy@v1
       with:
-          cluster-region: 'cluster-region'
-          cluster-name: 'cluster-name'
-          service-name: 'service-name'
-          task-definition-family-name: 'task-definition-family-name'
-          task-definition-file-name: 'task-definition-file-name'
-          repo-name: `repo-name`
-          image-name: `image-name`
+          cluster-region: cluster-region
+          cluster-name: cluster-name
+          service-name: service-name
+          task-definition-family-name: task-definition-family-name
+          task-definition-file-name: task-definition-file-name
+          repo-name: repo-name
+          image-name: image-name
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           # Following parameters are optional
-          image-version: `vX.X.X`
+          image-version: vX.X.X
     ...
 ```
